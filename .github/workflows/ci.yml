@@ -1,0 +1,35 @@
+name: CI - DAG Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install apache-airflow==2.10.4 pytest
+
+      - name: DAG import 에러 체크
+        run: |
+          python -c "
+          from airflow.models import DagBag
+          dag_bag = DagBag(dag_folder='dags/', include_examples=False)
+          assert len(dag_bag.import_errors) == 0, f'Import errors: {dag_bag.import_errors}'
+          print(f'✅ {len(dag_bag.dags)} DAG 로드 성공')
+          "
+
+      - name: pytest 실행
+        run: pytest tests/ -v
