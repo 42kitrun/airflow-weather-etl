@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install apache-airflow==2.10.4 pytest
+          pip install apache-airflow==2.10.4 pytest psycopg2-binary requests
 
       - name: DAG import 에러 체크
         run: |
